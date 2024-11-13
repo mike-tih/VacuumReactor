@@ -21,3 +21,5 @@ rs.setWirelessFrequency(frequency)
 rs.setWirelessOutput(value)
 
 print("Done")
+
+for method, _ in pairs(component.nuclear_chamber) do print(method) end

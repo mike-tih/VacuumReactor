@@ -1,4 +1,4 @@
--- local config = require("config")
+local config = require("config")
 local component = require("component")
 local computer = require('computer')
 local event = require("event")
@@ -7,18 +7,7 @@ local transposer = component.transposer
 local reactor = component.reactor_chamber
 local rs = component.redstone
 
-local coolantItemName = "gregtech:gt.360k_Helium_Coolantcell"
-local fuelRodItemName = "gregtech:gt.reactorUraniumQuad"
-local depletedFuelRodItemName = "IC2:reactorUraniumQuaddepleted"
-
-local coolantDamageThreshold = 40
-local waitTime = 5
-local minChargeThreshold = 0.9 -- Do not change!
-local fuelRodsInvSlot = 0
-local coolantCellsInvSlot = 1
-
-local needPowerFrequency = 100
-local switchFrequency = 1000
+rs.setWakeThreshold(1)
 
 local reactorInvSide
 local reactorInv
