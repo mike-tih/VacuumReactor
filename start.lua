@@ -128,8 +128,8 @@ end
 
 -- Countying rods and coolants
 reactorInv = transposer.getAllStacks(reactorInvSide).getAll()
-reactorInitialRodsCount = countItemsInInventory(reactorInv, fuelRodItemName)
-reactorInitialCoolantsCount = countItemsInInventory(reactorInv, coolantItemName)
+reactorInitialRodsCount = countItemsInInventory(reactorInv, config.fuelRodItemName)
+reactorInitialCoolantsCount = countItemsInInventory(reactorInv, config.coolantItemName)
 print("Reactor is set with " .. tostring(reactorInitialRodsCount) .. " fuel rods and " .. tostring(reactorInitialCoolantsCount) .. " coolant cells. Memorizing it...")
 
 -- LAUNCH --
@@ -139,27 +139,27 @@ repeat
     reactorInv = transposer.getAllStacks(reactorInvSide).getAll()
     
     -- Do we need the power?
-    rs.setWirelessFrequency(needPowerFrequency)
+    rs.setWirelessFrequency(config.needPowerFrequency)
     needPower = rs.getWirelessInput()
 
-    rs.setWirelessFrequency(switchFrequency)
+    rs.setWirelessFrequency(config.switchFrequency)
     switch = rs.getWirelessInput()
 
     -- Replace overheated coolant cells
-    coolantsToReplace = getCoolantsToReplacePositions(reactorInv, coolantItemName, coolantDamageThreshold)
+    coolantsToReplace = getCoolantsToReplacePositions(reactorInv, config.coolantItemName, config.coolantDamageThreshold)
     if #coolantsToReplace > 0 then
         reactor.setActive(false)
         print("Found " .. #coolantsToReplace .. " overheated coolant cells, replacing...")
         for index, position in ipairs(coolantsToReplace) do
             ::restart::
             aeInterfaceInv = transposer.getAllStacks(aeInterfaceInvSide).getAll()
-            aeInterfaceCoolantCellsCount = aeInterfaceInv[coolantCellsInvSlot].size -- does not work with any slot rn
+            aeInterfaceCoolantCellsCount = aeInterfaceInv[config.coolantCellsInvSlot].size -- does not work with any slot rn
 
             aeInterfaceEmptySlot = findFirstEmptySlot(aeInterfaceInv)
 
             if (aeInterfaceEmptySlot == nil or aeInterfaceCoolantCellsCount == 0) then
-                print("AE interface is full or the coolant is over, waiting " .. waitTime .. " seconds...")
-                sleep(waitTime)
+                print("AE interface is full or the coolant is over, waiting " .. config.waitTime .. " seconds...")
+                sleep(config.waitTime)
                 
                 local id = event.pull(0.01, "interrupted")
                 if id then
@@ -169,26 +169,26 @@ repeat
             end
 
             transposer.transferItem(reactorInvSide, aeInterfaceInvSide, 1, position + 1, aeInterfaceEmptySlot + 1)
-            transposer.transferItem(aeInterfaceInvSide, reactorInvSide, 1, coolantCellsInvSlot + 1, position + 1)
+            transposer.transferItem(aeInterfaceInvSide, reactorInvSide, 1, config.coolantCellsInvSlot + 1, position + 1)
         end
         print("Done!")
     end
 
     -- Replace depleted fuel rods
-    rodsToReplace = getRodsToReplacePositions(reactorInv, depletedFuelRodItemName)
+    rodsToReplace = getRodsToReplacePositions(reactorInv, config.depletedFuelRodItemName)
     if #rodsToReplace > 0 then
         reactor.setActive(false)
         print("Found " .. #rodsToReplace .. " depleted fuel rods, replacing...")
         for index, position in ipairs(rodsToReplace) do
             ::restart::
             aeInterfaceInv = transposer.getAllStacks(aeInterfaceInvSide).getAll()
-            aeInterfaceRodsCount = aeInterfaceInv[fuelRodsInvSlot].size -- does not work with any slot rn
+            aeInterfaceRodsCount = aeInterfaceInv[config.fuelRodsInvSlot].size -- does not work with any slot rn
 
             aeInterfaceEmptySlot = findFirstEmptySlot(aeInterfaceInv)
 
             if (aeInterfaceEmptySlot == nil or aeInterfaceRodsCount == 0) then
-                print("AE interface is full or the new fuel rods is over, waiting " .. waitTime .. " seconds...")
-                sleep(waitTime)
+                print("AE interface is full or the new fuel rods is over, waiting " .. config.waitTime .. " seconds...")
+                sleep(config.waitTime)
 
                 local id = event.pull(0.01, "interrupted")
                 if id then
@@ -198,7 +198,7 @@ repeat
             end
 
             transposer.transferItem(reactorInvSide, aeInterfaceInvSide, 1, position + 1, aeInterfaceEmptySlot + 1)
-            transposer.transferItem(aeInterfaceInvSide, reactorInvSide, 1, fuelRodsInvSlot + 1, position + 1)
+            transposer.transferItem(aeInterfaceInvSide, reactorInvSide, 1, config.fuelRodsInvSlot + 1, position + 1)
         end
         print("Done!")
     end
@@ -208,8 +208,8 @@ repeat
         shutOff("The reactor is gaining heat, performing emergency turn off")
     end
 
-    if computer.energy() / computer.maxEnergy() < minChargeThreshold then
-        shutOff("The chanrge of this computer got lower than " .. tostring(minChargeThreshold * 100) .. "%, performing emergency turn off")
+    if computer.energy() / computer.maxEnergy() < config.minChargeThreshold then
+        shutOff("The chanrge of this computer got lower than " .. tostring(config.minChargeThreshold * 100) .. "%, performing emergency turn off")
     end
 
     local id = event.pull(0.01, "interrupted")

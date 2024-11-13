@@ -12,7 +12,8 @@ local fuelRodItemName = "gregtech:gt.reactorUraniumQuad"
 local depletedFuelRodItemName = "IC2:reactorUraniumQuaddepleted"
 
 local coolantDamageThreshold = 40
-local waitTime = 5
+local rodsWaitTime = 5
+local freezerWaitTime = 5
 local minChargeThreshold = 0.9 -- Do not change!
 local newFuelRodsInvSlot = 0
 local newCoolantInvSlot = 1
