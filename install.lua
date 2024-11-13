@@ -3,7 +3,9 @@ local args = {...}
 local branch
 local repo
 local scripts = {
-    'main.lua',
+    'start.lua',
+    'config.lua',
+    '.shrc',
 }
 
 -- BRANCH
@@ -18,6 +20,7 @@ if #args >= 2 then
     repo = args[2]
 else
     repo = 'https://raw.githubusercontent.com/mike-tih/VacuumReactor/'
+end
 
 -- INSTALL
 for i=1, #scripts do
