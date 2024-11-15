@@ -1,3 +1,5 @@
+-- setup with "wget https://raw.githubusercontent.com/mike-tih/VacuumReactor/refs/heads/main/setup.lua && setup"
+
 local shell = require('shell')
 local args = {...}
 local branch
