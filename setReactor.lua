@@ -31,7 +31,7 @@ for side = 0, 5 do
     end
 end
 
-for index, item in setPattern do
+for index, item in ipairs(setPattern) do
     ::restart::
     aeInterfaceInv = transposer.getAllStacks(aeInterfaceInvSide).getAll()
     if item == f then
