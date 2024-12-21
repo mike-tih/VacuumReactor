@@ -1,7 +1,7 @@
 local config = {
     coolantItemName = "gregtech:gt.360k_Helium_Coolantcell",
-    fuelRodItemName = "gregtech:gt.reactorUraniumQuad",
-    depletedFuelRodItemName = "IC2:reactorUraniumQuaddepleted",
+    fuelRodItemName = "gregtech:gt.reactorMOXQuad",
+    depletedFuelRodItemName = "IC2:reactorMOXQuaddepleted",
 
     coolantDamageThreshold = 60,
     waitTime = 5,
@@ -9,8 +9,8 @@ local config = {
     fuelRodsInvSlot = 0,
     coolantCellsInvSlot = 1,
 
-    needPowerFrequency = 101,
-    switchFrequency = 707,
+    needPowerFrequency = 100,
+    switchFrequency = 708,
 }
 
 return config
