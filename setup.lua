@@ -7,6 +7,8 @@ local repo
 local scripts = {
     'start.lua',
     'config.lua',
+    'functions.lua',
+    'setReactor.lua',
     '.shrc',
 }
 
