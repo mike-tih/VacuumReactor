@@ -1,4 +1,5 @@
 local config = require("config")
+local f = require("functions")
 local component = require("component")
 local computer = require('computer')
 local event = require("event")
@@ -26,79 +27,6 @@ local rodsToReplace = {}
 local needPower = false
 local switch = false
 
--- Functions
-
-local function sleep(seconds)
-    os.execute("sleep " .. tostring(seconds))
-end
-
-local function keepActive()
-    if reactor.producesEnergy() == false then
-        reactor.setActive(true)
-    end
-end
-
-local function shutOff(message)
-    reactor.setActive(false)
-    print(message)
-    os.exit()
-end
-
-local function getCoolantsToReplacePositions(inventory, coolantItemName, coolantDamageThreshold)
-    local toReplace = {}
-
-    for i = 0, #inventory do
-        local item = inventory[i]
-
-        if (item.name == coolantItemName and item.damage > coolantDamageThreshold) then
-            table.insert(toReplace, i)
-        end
-    end
-
-    return toReplace
-end
-
-local function getRodsToReplacePositions(inventory, depletedFuelRodItemName)
-    local toReplace = {}
-
-    for i = 0, #inventory do
-        local item = inventory[i]
-
-        if (item.name == depletedFuelRodItemName) then
-            table.insert(toReplace, i)
-        end
-    end
-
-    return toReplace
-end
-
-local function countItemsInInventory(inventory, itemName)
-    local number = 0
-
-    for i = 0, #inventory do
-        local item = inventory[i]
-
-        if item.name == itemName then
-            number = number + tonumber(item.size)
-        end
-    end
-
-    return number
-end
-
-local function findFirstEmptySlot(inventory)
-    local slot
-
-    for i = 0, #inventory do
-        if not inventory[i].name then
-            slot = i
-            break
-        end
-    end
-
-    return slot
-end
-
 print("Initialising...")
 
 -- Looking for reactor inventory
@@ -113,7 +41,7 @@ for side = 0, 5 do
 end
 
 if not (reactorInvSide and aeInterfaceInvSide) then
-    shutOff("The transposer was not able to locate the reactor or AE interface. Please, check the setup. Performing emergency turn off.")
+    f.shutOff(reactor, "The transposer was not able to locate the reactor or AE interface. Please, check the setup. Performing emergency turn off.")
 end
 
 -- Checking reactor activeness
@@ -128,8 +56,8 @@ end
 
 -- Countying rods and coolants
 reactorInv = transposer.getAllStacks(reactorInvSide).getAll()
-reactorInitialRodsCount = countItemsInInventory(reactorInv, config.fuelRodItemName)
-reactorInitialCoolantsCount = countItemsInInventory(reactorInv, config.coolantItemName)
+reactorInitialRodsCount = f.countItemsInInventory(reactorInv, config.fuelRodItemName)
+reactorInitialCoolantsCount = f.countItemsInInventory(reactorInv, config.coolantItemName)
 print("Reactor is set with " .. tostring(reactorInitialRodsCount) .. " fuel rods and " .. tostring(reactorInitialCoolantsCount) .. " coolant cells. Memorizing it...")
 
 -- LAUNCH --
@@ -146,7 +74,7 @@ repeat
     switch = rs.getWirelessInput()
 
     -- Replace overheated coolant cells
-    coolantsToReplace = getCoolantsToReplacePositions(reactorInv, config.coolantItemName, config.coolantDamageThreshold)
+    coolantsToReplace = f.getCoolantsToReplacePositions(reactorInv, config.coolantItemName, config.coolantDamageThreshold)
     if #coolantsToReplace > 0 then
         reactor.setActive(false)
         print("Found " .. #coolantsToReplace .. " overheated coolant cells, replacing...")
@@ -155,15 +83,15 @@ repeat
             aeInterfaceInv = transposer.getAllStacks(aeInterfaceInvSide).getAll()
             aeInterfaceCoolantCellsCount = aeInterfaceInv[config.coolantCellsInvSlot].size -- does not work with any slot rn
 
-            aeInterfaceEmptySlot = findFirstEmptySlot(aeInterfaceInv)
+            aeInterfaceEmptySlot = f.findFirstEmptySlot(aeInterfaceInv)
 
             if (aeInterfaceEmptySlot == nil or aeInterfaceCoolantCellsCount == 0) then
                 print("AE interface is full or the coolant is over, waiting " .. config.waitTime .. " seconds...")
-                sleep(config.waitTime)
+                f.sleep(config.waitTime)
                 
                 local id = event.pull(0.01, "interrupted")
                 if id then
-                    shutOff("Shutting down gracefully on request...")
+                    f.shutOff(reactor, "Shutting down gracefully on request...")
                 end
                 goto restart
             end
@@ -175,7 +103,7 @@ repeat
     end
 
     -- Replace depleted fuel rods
-    rodsToReplace = getRodsToReplacePositions(reactorInv, config.depletedFuelRodItemName)
+    rodsToReplace = f.getRodsToReplacePositions(reactorInv, config.depletedFuelRodItemName)
     if #rodsToReplace > 0 then
         reactor.setActive(false)
         print("Found " .. #rodsToReplace .. " depleted fuel rods, replacing...")
@@ -184,15 +112,15 @@ repeat
             aeInterfaceInv = transposer.getAllStacks(aeInterfaceInvSide).getAll()
             aeInterfaceRodsCount = aeInterfaceInv[config.fuelRodsInvSlot].size -- does not work with any slot rn
 
-            aeInterfaceEmptySlot = findFirstEmptySlot(aeInterfaceInv)
+            aeInterfaceEmptySlot = f.findFirstEmptySlot(aeInterfaceInv)
 
             if (aeInterfaceEmptySlot == nil or aeInterfaceRodsCount == 0) then
                 print("AE interface is full or the new fuel rods is over, waiting " .. config.waitTime .. " seconds...")
-                sleep(config.waitTime)
+                f.sleep(config.waitTime)
 
                 local id = event.pull(0.01, "interrupted")
                 if id then
-                    shutOff("Shutting down gracefully on request...")
+                    f.shutOff(reactor, "Shutting down gracefully on request...")
                 end
                 goto restart
             end
@@ -205,21 +133,21 @@ repeat
 
     -- Checking for alarms (turn off the program)
     if reactor.getHeat() > reactorInitialTemperature then
-        shutOff("The reactor is gaining heat, performing emergency turn off")
+        f.shutOff(reactor, "The reactor is gaining heat, performing emergency turn off")
     end
 
     if computer.energy() / computer.maxEnergy() < config.minChargeThreshold then
-        shutOff("The chanrge of this computer got lower than " .. tostring(config.minChargeThreshold * 100) .. "%, performing emergency turn off")
+        f.shutOff(reactor, "The chanrge of this computer got lower than " .. tostring(config.minChargeThreshold * 100) .. "%, performing emergency turn off")
     end
 
     local id = event.pull(0.01, "interrupted")
     if id then
-        shutOff("Shutting down gracefully on request...")
+        f.shutOff(reactor, "Shutting down gracefully on request...")
     end
 
     -- Finally turning ON and OFF
     if (needPower and switch) then
-        keepActive()
+        f.keepActive(reactor)
     else
         reactor.setActive(false)
     end
