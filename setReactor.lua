@@ -43,7 +43,7 @@ for index, item in ipairs(setPattern) do
             goto restart
         end
         
-        transposer.transferItem(aeInterfaceInvSide, reactorInvSide, 1, config.fuelRodsInvSlot + 1, index + 1)
+        transposer.transferItem(aeInterfaceInvSide, reactorInvSide, 1, config.fuelRodsInvSlot + 1, index)
     else
         aeInterfaceCoolantCellsCount = aeInterfaceInv[config.coolantCellsInvSlot].size -- does not work with any slot rn
         
@@ -53,6 +53,6 @@ for index, item in ipairs(setPattern) do
             goto restart
         end
         
-        transposer.transferItem(aeInterfaceInvSide, reactorInvSide, 1, config.coolantCellsInvSlot + 1, index + 1)
+        transposer.transferItem(aeInterfaceInvSide, reactorInvSide, 1, config.coolantCellsInvSlot + 1, index)
     end
 end
