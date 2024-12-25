@@ -1,4 +1,4 @@
--- setup with "wget https://raw.githubusercontent.com/mike-tih/VacuumReactor/refs/heads/main/setup.lua && setup"
+-- setup with "wget https://raw.githubusercontent.com/mike-tih/VacuumReactor/refs/heads/main/single/setup.lua && setup"
 
 local shell = require('shell')
 local args = {...}
@@ -28,5 +28,5 @@ end
 
 -- INSTALL
 for i=1, #scripts do
-    shell.execute(string.format('wget -f %s%s/%s', repo, branch, scripts[i]))
+    shell.execute(string.format('wget -f %s%s/single/%s', repo, branch, scripts[i]))
 end
